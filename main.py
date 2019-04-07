@@ -1,6 +1,7 @@
 import re
 import sys
 import bs4
+import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -81,8 +82,29 @@ class House:
 
 
 houses = search_airbnb(*query_test)
+rows = ''
 
 for house in houses:
     ho = House(*query_test, house)
     attrs = vars(ho)
-    print(', '.join("%s: %s" % item for item in attrs.items()))
+    #print(', '.join("%s: %s" % item for item in attrs.items()))
+    rows = (attrs['query_neighborhood'] +','
+    + attrs['query_adults'] +','
+    + attrs['query_check_in'] +','
+    + attrs['query_check_out'] +','
+    + attrs['night_price'].strip() +','
+    + attrs['total_price'].strip() +','
+    + attrs['guest_num'] +','
+    + attrs['bedroom_num'] +','
+    + attrs['beds_num'] +','
+    + attrs['bathroom_num'] +','
+    + str(attrs['has_kitchen']) +','
+    + str(attrs['has_wifi']) + '\r'
+    + rows )
+
+with open(time.strftime("%Y-%m-%d_%H-%M-%S") + ".csv","w") as f:
+        f.write('query_neighborhood,query_adults,query_check_in,query_check_out,night_price,total_price,guest_num,bedroom_num,beds_num,bathroom_num,has_kitchen,has_wifi' + '\r')
+        f.write(rows)
+        f.close()
+
+driver.quit() #necessari per no deixar obert el chrome cada cop
